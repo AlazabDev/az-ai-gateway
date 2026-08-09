@@ -1,0 +1,189 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* AI Chat Platform Design System
+Features: RTL support, modern gradients, AI-themed colors
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* Neutral palette - clean, minimal */
+    --background: 0 0% 100%;
+    --foreground: 240 10% 12%;
+    --muted: 240 5% 65%;
+    --muted-foreground: 240 5% 40%;
+
+    /* Card & surface */
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 12%;
+
+    /* Primary - Deep Navy #030957 */
+    --primary: 233 94% 18%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Secondary - Light neutral */
+    --secondary: 240 8% 96%;
+    --secondary-foreground: 233 94% 18%;
+
+    /* Accent - Gold / Amber Yellow #FFB900 (used sparingly) */
+    --accent: 44 100% 50%;
+    --accent-foreground: 233 94% 18%;
+
+    /* Destructive */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Borders & inputs */
+    --border: 240 6% 90%;
+    --input: 240 6% 95%;
+    --ring: 233 94% 18%;
+
+    /* Radius */
+    --radius: 0.5rem;
+
+    /* Sidebar */
+    --sidebar-background: 240 10% 98%;
+    --sidebar-foreground: 233 94% 18%;
+    --sidebar-primary: 233 94% 18%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 44 100% 95%;
+    --sidebar-accent-foreground: 233 94% 18%;
+    --sidebar-border: 240 6% 90%;
+    --sidebar-ring: 233 94% 18%;
+
+    /* Chat colors */
+    --chat-user: 233 94% 96%;
+    --chat-ai: 44 100% 95%;
+    --chat-user-text: 233 94% 18%;
+    --chat-ai-text: 44 80% 25%;
+  }
+
+  .dark {
+    /* Dark neutral palette */
+    --background: 240 10% 10%;
+    --foreground: 0 0% 98%;
+    --muted: 240 5% 40%;
+    --muted-foreground: 0 0% 70%;
+
+    /* Dark surfaces */
+    --card: 240 8% 15%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 240 8% 15%;
+    --popover-foreground: 0 0% 98%;
+
+    /* Primary - Bright purple */
+    --primary: 265 90% 65%;
+    --primary-foreground: 240 10% 10%;
+
+    /* Secondary */
+    --secondary: 240 8% 22%;
+    --secondary-foreground: 0 0% 98%;
+
+    /* Accent - Bright blue */
+    --accent: 220 95% 65%;
+    --accent-foreground: 240 10% 10%;
+
+    /* Destructive */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Borders & inputs */
+    --border: 240 8% 25%;
+    --input: 240 8% 20%;
+    --ring: 265 90% 65%;
+
+    /* Sidebar */
+    --sidebar-background: 240 10% 12%;
+    --sidebar-foreground: 0 0% 95%;
+    --sidebar-primary: 265 90% 65%;
+    --sidebar-primary-foreground: 240 10% 10%;
+    --sidebar-accent: 240 8% 25%;
+    --sidebar-accent-foreground: 0 0% 95%;
+    --sidebar-border: 240 8% 25%;
+    --sidebar-ring: 265 90% 65%;
+
+    /* Chat colors */
+    --chat-user: 265 50% 25%;
+    --chat-ai: 220 50% 25%;
+    --chat-user-text: 265 90% 80%;
+    --chat-ai-text: 220 95% 80%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  }
+
+  /* RTL Support */
+  [dir="rtl"] {
+    direction: rtl;
+  }
+
+  [dir="ltr"] {
+    direction: ltr;
+  }
+
+  /* Arabic font optimization */
+  .arabic-text {
+    font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+    line-height: 1.6;
+  }
+
+  /* Smooth animations */
+  .animate-gradient {
+    background-size: 200% 200%;
+    animation: gradient 4s ease infinite;
+  }
+
+  @keyframes gradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* Chat message animations */
+  .message-enter {
+    animation: slideIn 0.3s ease-out;
+  }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Mermaid charts — always rendered LTR even inside an RTL document */
+  .mermaid-container svg {
+    max-width: 100%;
+    height: auto;
+    direction: ltr;
+  }
+
+  .mermaid-container .nodeLabel,
+  .mermaid-container .edgeLabel,
+  .mermaid-container text {
+    font-family: 'Segoe UI', Tahoma, Arial, sans-serif !important;
+  }
+
+  [dir="rtl"] .mermaid-container {
+    direction: ltr;
+    text-align: left;
+  }
+}
