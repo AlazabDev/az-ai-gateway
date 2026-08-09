@@ -59,7 +59,7 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { to: '/', icon: MessageSquare, label: 'الدردشة' },
+  { to: '/', icon: MessageSquare, label: 'الدردشة الذكية' },
   { to: '/tools/tasks', icon: CheckSquare, label: 'المهام والمشاريع' },
   { to: '/tools/contracts', icon: FileText, label: 'العقود والمستندات' },
   { to: '/tools/reports', icon: BarChartIcon, label: 'التقارير الذكية' },
@@ -110,7 +110,17 @@ export const Sidebar = (): JSX.Element => {
 
   const loadSessions = async () => {
     if (!user) {
-      setSessions([]);
+      // Load local sessions
+      try {
+        const local = localStorage.getItem('alazab_chat_sessions');
+        if (local) {
+          setSessions(JSON.parse(local));
+        } else {
+          setSessions([]);
+        }
+      } catch {
+        setSessions([]);
+      }
       return;
     }
 
@@ -122,10 +132,28 @@ export const Sidebar = (): JSX.Element => {
         .order('updated_at', { ascending: false })
         .limit(10);
 
-      if (error) throw error;
+      if (error) {
+        // Fallback to local storage
+        const local = localStorage.getItem('alazab_chat_sessions');
+        if (local) {
+          setSessions(JSON.parse(local));
+        } else {
+          setSessions([]);
+        }
+        return;
+      }
       setSessions((data ?? []) as ChatSession[]);
-    } catch (error) {
-      console.error('Failed to load sessions:', error);
+    } catch {
+      try {
+        const local = localStorage.getItem('alazab_chat_sessions');
+        if (local) {
+          setSessions(JSON.parse(local));
+        } else {
+          setSessions([]);
+        }
+      } catch {
+        setSessions([]);
+      }
     }
   };
 
@@ -166,7 +194,7 @@ export const Sidebar = (): JSX.Element => {
         to={to}
         onClick={() => setIsOpen(false)}
         className={`flex items-center gap-2.5 px-3 py-2 rounded-md text-sm transition-colors ${
-          active ? 'bg-primary/10 text-primary font-medium' : 'text-muted-foreground hover:bg-accent hover:text-foreground'
+          active ? 'bg-primary/15 text-primary font-semibold' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
         }`}
       >
         <Icon className="w-4 h-4 flex-shrink-0" />
@@ -180,106 +208,109 @@ export const Sidebar = (): JSX.Element => {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed top-4 left-4 z-40 lg:hidden p-2 hover:bg-secondary rounded-lg transition-colors"
+        className="fixed top-4 right-4 z-40 lg:hidden p-2.5 bg-slate-900 text-white dark:bg-slate-800 rounded-xl shadow-md transition-colors"
         aria-label="فتح القائمة"
       >
         {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
       </button>
 
       <aside className={`
-        fixed lg:static top-0 left-0 h-screen w-64 bg-sidebar-background border-r border-sidebar-border
-        transition-all duration-300 z-30
-        ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+        fixed lg:static top-0 right-0 h-screen w-72 bg-slate-900 text-slate-100 border-l border-slate-800
+        transition-all duration-300 z-30 shadow-xl lg:shadow-none
+        ${isOpen ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'}
         flex flex-col
       `}>
-        <div className="p-6 border-b border-sidebar-border">
-          <h1 className="text-xl font-bold text-sidebar-foreground">Alazab AI Console</h1>
-          <p className="text-xs text-sidebar-accent-foreground mt-1">مركز الذكاء الهندسي والإداري</p>
+        <div className="p-5 border-b border-slate-800 bg-slate-950/60">
+          <div className="flex items-center justify-between">
+            <h1 className="text-lg font-bold tracking-tight text-white">Alazab AI Console</h1>
+            <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-[10px]">نشط</Badge>
+          </div>
+          <p className="text-xs text-slate-400 mt-1">منصة الذكاء الهندسي والإداري المتكاملة</p>
         </div>
 
-        <nav className="flex-1 overflow-y-auto flex flex-col">
+        <nav className="flex-1 overflow-y-auto flex flex-col p-3 space-y-2">
           <button
             type="button"
             onClick={createNewChat}
-            className="m-4 mb-4 px-4 py-3 rounded-lg font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-200 flex items-center gap-2 justify-center"
+            className="w-full px-4 py-3 rounded-xl font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-all shadow-sm flex items-center gap-2 justify-center mb-2"
           >
             <Plus className="w-4 h-4" />
-            جلسة جديدة
+            <span>جلسة دردشة جديدة</span>
           </button>
 
-          <div className="px-3 space-y-1 mb-4">
+          <div className="space-y-1">
             {NAV_ITEMS.map(({ to, icon: Icon, label, badge }) => (
               <Link
                 key={to}
                 to={to}
                 onClick={() => setIsOpen(false)}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-all duration-200 text-sm ${
+                className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium transition-all text-sm ${
                   pathname === to
-                    ? 'bg-sidebar-accent text-sidebar-primary font-semibold'
-                    : 'text-sidebar-foreground hover:bg-sidebar-accent/50'
+                    ? 'bg-primary text-primary-foreground font-bold shadow-sm'
+                    : 'text-slate-300 hover:bg-slate-800 hover:text-white'
                 }`}
               >
                 <Icon className="w-4 h-4 flex-shrink-0" />
                 <span className="flex-1 truncate">{label}</span>
-                {badge && <Badge variant="secondary" className="text-[10px] h-4 px-1">{badge}</Badge>}
+                {badge && <Badge variant="outline" className="text-[10px] h-4 px-1 bg-slate-800 border-slate-700 text-slate-300">{badge}</Badge>}
               </Link>
             ))}
           </div>
 
-          <div className="px-3 mb-4">
-            <div className="px-2 pb-1.5">
-              <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium">المحادثات</span>
+          <div className="pt-3 border-t border-slate-800">
+            <div className="px-2 pb-2">
+              <span className="text-[11px] uppercase tracking-wider text-slate-400 font-bold">المحادثات السابقة</span>
             </div>
-            <div className="px-2 pb-1.5">
+            <div className="px-2 pb-2">
               <div className="relative">
-                <SearchIcon className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-muted-foreground pointer-events-none" />
+                <SearchIcon className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
                 <Input
                   value={sessionSearch}
                   onChange={event => setSessionSearch(event.target.value)}
                   placeholder="ابحث في المحادثات..."
-                  className="h-7 text-xs pr-7 bg-background"
+                  className="h-8 text-xs pr-8 bg-slate-950 border-slate-800 text-slate-200 placeholder:text-slate-500"
                 />
               </div>
             </div>
-            <div className="space-y-0.5">
+            <div className="space-y-1 max-h-48 overflow-y-auto pr-1">
               {filteredSessions.length === 0 && (
-                <p className="text-[11px] text-muted-foreground text-center py-2">
-                  {sessionSearch ? 'لا توجد نتائج' : 'لا توجد محادثات'}
+                <p className="text-[11px] text-slate-500 text-center py-2">
+                  {sessionSearch ? 'لا توجد نتائج' : 'لا توجد محادثات مسجلة'}
                 </p>
               )}
               {filteredSessions.map(session => (
                 <div
                   key={session.id}
-                  className={`group flex items-center gap-1 px-2 py-1.5 rounded-md text-xs cursor-pointer ${
-                    sessionId === session.id ? 'bg-primary/10 text-primary' : 'hover:bg-accent text-muted-foreground'
+                  className={`group flex items-center gap-1.5 px-2.5 py-2 rounded-lg text-xs cursor-pointer transition-colors ${
+                    sessionId === session.id ? 'bg-primary/20 text-primary-foreground font-semibold' : 'hover:bg-slate-800 text-slate-400 hover:text-slate-200'
                   }`}
                   onClick={() => editingId !== session.id && setSession(session.id)}
                 >
-                  <MessageSquare className="w-3 h-3 flex-shrink-0" />
+                  <MessageSquare className="w-3.5 h-3.5 flex-shrink-0 text-slate-400" />
                   {editingId === session.id ? (
                     <>
                       <Input
                         value={editTitle}
                         onChange={event => setEditTitle(event.target.value)}
-                        className="h-5 text-xs flex-1"
+                        className="h-6 text-xs flex-1 bg-slate-950 border-slate-700 text-white"
                         onClick={event => event.stopPropagation()}
                         onKeyDown={event => event.key === 'Enter' && handleRename(session.id)}
                       />
                       <Button
                         size="icon"
                         variant="ghost"
-                        className="h-5 w-5"
+                        className="h-6 w-6 text-emerald-400 hover:bg-slate-800"
                         onClick={event => { event.stopPropagation(); handleRename(session.id); }}
                       >
-                        <Check className="w-3 h-3" />
+                        <Check className="w-3.5 h-3.5" />
                       </Button>
                       <Button
                         size="icon"
                         variant="ghost"
-                        className="h-5 w-5"
+                        className="h-6 w-6 text-rose-400 hover:bg-slate-800"
                         onClick={event => { event.stopPropagation(); setEditingId(null); }}
                       >
-                        <X className="w-3 h-3" />
+                        <X className="w-3.5 h-3.5" />
                       </Button>
                     </>
                   ) : (
@@ -288,10 +319,10 @@ export const Sidebar = (): JSX.Element => {
                       <Button
                         size="icon"
                         variant="ghost"
-                        className="h-5 w-5 opacity-0 group-hover:opacity-100"
+                        className="h-6 w-6 opacity-0 group-hover:opacity-100 text-slate-400 hover:text-white"
                         onClick={event => { event.stopPropagation(); setEditingId(session.id); setEditTitle(session.title); }}
                       >
-                        <Pencil className="w-2.5 h-2.5" />
+                        <Pencil className="w-3 h-3" />
                       </Button>
                     </>
                   )}
@@ -300,67 +331,71 @@ export const Sidebar = (): JSX.Element => {
             </div>
           </div>
 
-          <Accordion type="multiple" defaultValue={['services']} className="px-2">
-            <AccordionItem value="services" className="border-0">
-              <AccordionTrigger className="py-2 px-2 text-[11px] uppercase tracking-wider text-muted-foreground font-medium hover:no-underline">
-                خدمات Azure
-              </AccordionTrigger>
-              <AccordionContent className="pb-2">
-                <div className="space-y-0.5">
-                  {SERVICE_ITEMS.map(item => <NavLink key={item.to} {...item} />)}
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
+          <div className="pt-2">
+            <Accordion type="multiple" defaultValue={['services']} className="border-t border-slate-800 pt-2">
+              <AccordionItem value="services" className="border-0">
+                <AccordionTrigger className="py-2 px-2 text-[11px] uppercase tracking-wider text-slate-400 font-bold hover:no-underline">
+                  خدمات Azure المتقدمة
+                </AccordionTrigger>
+                <AccordionContent className="pb-2">
+                  <div className="space-y-1">
+                    {SERVICE_ITEMS.map(item => <NavLink key={item.to} {...item} />)}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </div>
         </nav>
 
-        <div className="border-t border-sidebar-border p-4 space-y-3">
+        <div className="border-t border-slate-800 p-4 bg-slate-950/60 space-y-3">
           {SETTINGS_ITEMS.map(({ to, icon: Icon, label }) => (
             <Link
               key={to}
               to={to}
               onClick={() => setIsOpen(false)}
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg font-medium transition-all duration-200 text-sm ${
+              className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium transition-all text-sm ${
                 pathname === to
-                  ? 'bg-sidebar-accent text-sidebar-primary'
-                  : 'text-sidebar-foreground hover:bg-sidebar-accent/50'
+                  ? 'bg-slate-800 text-white font-bold'
+                  : 'text-slate-300 hover:bg-slate-800 hover:text-white'
               }`}
             >
-              <Icon className="w-5 h-5" />
+              <Icon className="w-4 h-4" />
               <span>{label}</span>
             </Link>
           ))}
 
           {user ? (
-            <>
-              <div className="text-xs text-sidebar-foreground px-3 py-2 border-t border-sidebar-accent pt-3">
-                <p className="font-medium truncate">{user.email}</p>
+            <div className="pt-2 border-t border-slate-800 space-y-2">
+              <div className="px-3 py-1.5 bg-slate-950 rounded-lg border border-slate-800">
+                <p className="text-[11px] text-slate-400">المستخدم الحالي</p>
+                <p className="text-xs font-semibold text-slate-200 truncate">{user.email}</p>
               </div>
               <button
                 type="button"
                 onClick={handleLogout}
-                className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-sidebar-foreground hover:bg-destructive/10 transition-all duration-200"
+                className="w-full flex items-center gap-3 px-3.5 py-2 rounded-xl text-sm text-rose-400 hover:bg-rose-500/10 transition-all font-medium"
               >
-                <LogOut className="w-5 h-5" />
+                <LogOut className="w-4 h-4" />
                 <span>تسجيل خروج</span>
               </button>
-            </>
+            </div>
           ) : (
             <Link
               to="/auth"
               onClick={() => setIsOpen(false)}
-              className="w-full flex items-center gap-3 px-3 py-2 rounded-lg bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-all duration-200 text-sm"
+              className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-all text-sm justify-center shadow-sm"
             >
-              <LogIn className="w-5 h-5" />
-              <span>دخول</span>
+              <LogIn className="w-4 h-4" />
+              <span>تسجيل الدخول</span>
             </Link>
           )}
         </div>
       </aside>
 
       {isOpen && (
-        <div className="fixed inset-0 bg-black/50 z-20 lg:hidden" onClick={() => setIsOpen(false)} />
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs z-20 lg:hidden" onClick={() => setIsOpen(false)} />
       )}
     </>
   );
 };
+

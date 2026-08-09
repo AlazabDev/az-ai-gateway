@@ -32,19 +32,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const resolvedRolesForUser = useRef<string | null>(null);
 
   const fetchRoles = useCallback(async (userId: string) => {
-    const { data, error } = await supabase
-      .from('user_roles')
-      .select('role')
-      .eq('user_id', userId);
+    try {
+      const { data, error } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', userId);
 
-    if (error) {
-      console.error('[useAuth] failed to load user roles', error.message);
-      setRoles([]);
-      return;
+      if (error) {
+        console.warn('[useAuth] failed to load user roles, defaulting to user', error.message);
+        resolvedRolesForUser.current = userId;
+        setRoles(['user']);
+        return;
+      }
+
+      resolvedRolesForUser.current = userId;
+      const loadedRoles = (data ?? []).map((row) => row.role as AppRole);
+      setRoles(loadedRoles.length > 0 ? loadedRoles : ['user']);
+    } catch (err) {
+      console.warn('[useAuth] role fetch exception', err);
+      resolvedRolesForUser.current = userId;
+      setRoles(['user']);
     }
-
-    resolvedRolesForUser.current = userId;
-    setRoles((data ?? []).map((row) => row.role as AppRole));
   }, []);
 
   useEffect(() => {

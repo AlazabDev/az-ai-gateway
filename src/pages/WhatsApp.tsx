@@ -12,6 +12,7 @@ import {
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Sidebar } from '@/components/layout/Sidebar';
+import { FrequentSendersSidebar } from '@/components/whatsapp/FrequentSendersSidebar';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend, CartesianGrid } from 'recharts';
 
 interface WhatsAppMessage {
@@ -116,6 +117,7 @@ export default function WhatsApp() {
   const [filterType, setFilterType] = useState('all');
   const [selectedMessage, setSelectedMessage] = useState<WhatsAppMessage | null>(null);
   const [stats, setStats] = useState({ total: 0, texts: 0, media: 0, analyzed: 0 });
+  const [selectedSender, setSelectedSender] = useState<string | null>(null);
   const [quickReplyText, setQuickReplyText] = useState('');
   const [sendingReply, setSendingReply] = useState(false);
 
@@ -208,12 +210,13 @@ export default function WhatsApp() {
 
   const filtered = messages.filter(msg => {
     const matchesType = filterType === 'all' || msg.message_type === filterType;
+    const matchesSender = !selectedSender || msg.from_number === selectedSender;
     const matchesSearch = !search ||
       msg.text_content?.includes(search) ||
       msg.from_name?.includes(search) ||
       msg.from_number?.includes(search) ||
       msg.ai_summary?.includes(search);
-    return matchesType && matchesSearch;
+    return matchesType && matchesSender && matchesSearch;
   });
 
   const triggerAnalysis = async (messageId: string) => {
@@ -334,7 +337,16 @@ export default function WhatsApp() {
           </Card>
 
           {/* Messages Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            {/* Frequent Senders Sidebar */}
+            <div>
+              <FrequentSendersSidebar
+                messages={messages}
+                selectedSender={selectedSender}
+                onSelectSender={setSelectedSender}
+              />
+            </div>
+
             {/* Messages List */}
             <div className="lg:col-span-2">
               <ScrollArea className="h-[600px]">
