@@ -1,0 +1,6 @@
+{
+  "name": "alazab-operations",
+  "version": "0.1.0",
+  "description": "Read-first Alazab operational workflows for maintenance, BIM, projects, products, and finance.",
+  "skills": "./skills/"
+}
