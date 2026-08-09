@@ -41,6 +41,7 @@ const SmartReports = lazy(() => import("./pages/tools/SmartReports"));
 const TaskBoard = lazy(() => import("./pages/tools/TaskBoard"));
 const SpeechStudio = lazy(() => import("./pages/SpeechStudio"));
 const AzureFoundryHub = lazy(() => import("./pages/AzureFoundryHub"));
+const GoogleSheets = lazy(() => import("./pages/GoogleSheets"));
 
 const queryClient = new QueryClient();
 
@@ -84,6 +85,7 @@ const App = () => (
                   <Route path="/tools/reports" element={<ProtectedRoute><SmartReports /></ProtectedRoute>} />
                   <Route path="/tools/tasks" element={<ProtectedRoute><TaskBoard /></ProtectedRoute>} />
                   <Route path="/tools/speech" element={<ProtectedRoute><SpeechStudio /></ProtectedRoute>} />
+                  <Route path="/google-sheets" element={<ProtectedRoute><GoogleSheets /></ProtectedRoute>} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </Suspense>

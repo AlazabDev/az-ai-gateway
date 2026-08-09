@@ -37,6 +37,7 @@ import {
   BarChart3 as BarChartIcon,
   AudioLines,
   Calculator,
+  FileSpreadsheet,
   type LucideIcon,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
@@ -69,6 +70,7 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/tools/speech', icon: AudioLines, label: 'استوديو الصوت', badge: 'جديد' },
   { to: '/engineering', icon: Box, label: 'الأدوات الهندسية' },
   { to: '/whatsapp', icon: Phone, label: 'واتساب الأعمال' },
+  { to: '/google-sheets', icon: FileSpreadsheet, label: 'Google Sheets', badge: 'متصل' },
   { to: '/azure', icon: Cloud, label: 'أدوات Azure' },
   { to: '/azure/foundry', icon: Bot, label: 'منصة Azure Foundry والوكلاء', badge: 'أساسي' },
   { to: '/azure/settings', icon: Bot, label: 'نماذج ووكلاء Azure' },
