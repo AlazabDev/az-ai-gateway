@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -8,29 +8,18 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Bot, Loader2, LockKeyhole } from 'lucide-react';
 
-function safeInternalRedirect(value: string | null): string {
-  if (!value || !value.startsWith('/') || value.startsWith('//')) return '/';
-  return value;
-}
-
 export default function Auth() {
   const navigate = useNavigate();
-  const location = useLocation();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const redirectTo = useMemo(() => {
-    const params = new URLSearchParams(location.search);
-    return safeInternalRedirect(params.get('redirect'));
-  }, [location.search]);
-
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate(redirectTo, { replace: true });
+      if (data.session) navigate('/', { replace: true });
     });
-  }, [navigate, redirectTo]);
+  }, [navigate]);
 
   const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -47,7 +36,7 @@ export default function Auth() {
       return;
     }
 
-    navigate(redirectTo, { replace: true });
+    navigate('/', { replace: true });
   };
 
   return (

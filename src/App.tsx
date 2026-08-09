@@ -10,9 +10,8 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { PageLoader } from "@/components/loading/PageLoader";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 
-// Eager: authentication and OAuth entry screens must load without the app shell.
+// Eager: the two entry screens every visitor hits first.
 import Auth from "./pages/Auth";
-import OAuthConsent from "./pages/OAuthConsent";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 
@@ -57,7 +56,6 @@ const App = () => (
               <Suspense fallback={<PageLoader message="جارٍ التحميل..." />}>
                 <Routes>
                   <Route path="/auth" element={<Auth />} />
-                  <Route path="/oauth/consent" element={<OAuthConsent />} />
                   <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
                   <Route path="/integrations" element={<ProtectedRoute><Integrations /></ProtectedRoute>} />
                   <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
