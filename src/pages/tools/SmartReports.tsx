@@ -15,6 +15,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
+import { getDatabaseErrorMessageAr, handleDatabaseError } from '@/lib/error-handler';
 
 interface Kpi { name: string; value: string; trend?: 'up'|'down'|'flat'; note?: string }
 interface Section { heading: string; content: string }
