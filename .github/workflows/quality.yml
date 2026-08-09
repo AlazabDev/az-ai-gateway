@@ -35,10 +35,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: pnpm
 
+      # This repository currently tracks bun.lockb but not pnpm-lock.yaml.
+      # Do not enable setup-node's pnpm cache or --frozen-lockfile until a
+      # pnpm lockfile is intentionally committed.
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
       - name: Prepare logs
         run: mkdir -p quality-logs
