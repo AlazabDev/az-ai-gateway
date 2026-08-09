@@ -1,30 +1,28 @@
 ---
 name: maintenance-operations
-description: Read and analyze Alazab/UberFix maintenance requests and operational status without changing production state.
+description: Read Alazab/UberFix maintenance request status and maintenance gateway metadata without changing production state.
 ---
 
-Use this skill for maintenance request lookup, status review, SLA context, history inspection, and operational analysis.
+Use this skill for exact maintenance request status lookup and maintenance workflow/catalog inspection.
 
-## Allowed MCP actions
+## Available plugin tools
 
-- `maintenance.read`
-
-## Never call from this skill
-
-- `maintenance.write`
-- `maintenance.assign`
-- `maintenance.transition`
-- `maintenance.notify`
-- payment, approval, raw SQL, shell, user deletion, or secret-reading actions
+- `maintenance_get_status`
+- `maintenance_catalog`
 
 ## Workflow
 
-1. Resolve the request, branch, property, or project identifier from the user's input before reading data.
-2. Call `maintenance.read` with the narrowest useful filter.
-3. Preserve returned IDs, timestamps, statuses, assignees, and source references in the analysis.
-4. Distinguish facts returned by the tool from conclusions inferred from them.
-5. If the user asks to change production state, explain the intended change and route to an explicitly approved write workflow instead of performing it through this read-only skill.
+1. For a request lookup, use an exact `request_id` or `request_number`. Do not guess identifiers.
+2. Call `maintenance_get_status` for current request state.
+3. Call `maintenance_catalog` only when workflow/tool metadata is relevant.
+4. Preserve returned IDs, timestamps, states, and source values exactly.
+5. Separate facts returned by the tool from any operational conclusion.
+6. If the user asks to mutate a maintenance request, state that plugin v0.1 is read-only and do not substitute another write-capable tool.
+
+## Prohibited in v0.1
+
+Do not create requests, transition stages, add notes, cancel requests, run lifecycle macros, approve, pay, execute raw SQL or shell commands, delete users, or read secrets.
 
 ## Output
 
-Return the current state first, then anomalies/blockers, then the next operational action. Do not invent missing fields.
+Return the current state first, then discrepancies/blockers, then the next operational action. Do not invent missing fields.
