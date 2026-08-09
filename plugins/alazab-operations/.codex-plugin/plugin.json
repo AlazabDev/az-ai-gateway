@@ -1,6 +1,6 @@
 {
   "name": "alazab-operations",
   "version": "0.1.0",
-  "description": "Read-first Alazab operational workflows for maintenance, BIM, projects, products, and finance.",
+  "description": "Read-only Alazab maintenance and Daftra operational workflows backed by the production MCP gateway.",
   "skills": "./skills/"
 }
